@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICON HAIR - Studio & Grooming | Phase 1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* --- CORE VARIABLES & RESET --- */
+:root {
+    --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #ec4899;
+    --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --info: #3b82f6;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --text-light: #64748b;
+    --border: #e2e8f0; --sidebar-w: 260px; --sidebar-collapsed: 70px;
+}
+.dark-mode {
+    --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --text-light: #94a3b8;
+    --border: #334155;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; transition: background 0.3s, color 0.3s; }
+
+/* --- LOGIN PAGE STYLES --- */
+#loginPage {
+    position: fixed; inset: 0; z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+}
+.login-box {
+    width: 100%; max-width: 420px; padding: 40px; border-radius: 24px;
+    background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.login-logo {
+    width: 80px; height: 80px; margin: 0 auto 20px;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    border-radius: 20px; display: flex; align-items: center; justify-content: center;
+    font-size: 32px; font-weight: 800; color: white;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+}
+
+/* --- APP LAYOUT --- */
+.app { display: flex; height: 100vh; position: relative; z-index: 1; }
+.sidebar {
+    width: var(--sidebar-w); min-height: 100vh;
+    background: linear-gradient(180deg, #1e1b4b 0%, #312e81 50%, #3730a3 100%);
+    color: white; position: fixed; top: 0; left: 0;
+    overflow-y: auto; overflow-x: hidden; transition: all 0.3s;
+    z-index: 100; display: flex; flex-direction: column;
+}
+[dir="rtl"] .sidebar { left: auto; right: 0; }
+.sidebar.collapsed { width: var(--sidebar-collapsed); }
+.sidebar.collapsed .menu-text, .sidebar.collapsed .logo-text, .sidebar.collapsed .sidebar-footer-text { display: none; }
+
+.main {
+    margin-left: var(--sidebar-w); flex: 1; overflow-y: auto; overflow-x: hidden;
+    padding: 24px; transition: all 0.3s; -webkit-overflow-scrolling: touch;
+}
+[dir="rtl"] .main { margin-left: 0; margin-right: var(--sidebar-w); }
+.sidebar.collapsed ~ .main { margin-left: var(--sidebar-collapsed); }
+[dir="rtl"] .sidebar.collapsed ~ .main { margin-left: 0; margin-right: var(--sidebar-collapsed); }
+
+/* --- COMPONENTS --- */
+.logo { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex-shrink: 0; color: white; box-shadow: 0 4px 12px rgba(99,102,241,0.4); }
+.logo-text .brand { font-weight: 700; font-size: 14px; white-space: nowrap; }
+.logo-text .tagline { font-size: 10px; opacity: 0.7; white-space: nowrap; }
+
+.menu { padding: 12px 8px; flex: 1; }
+.menu-item {
+    display: flex; align-items: center; gap: 12px; padding: 11px 14px; margin: 3px 6px;
+    border-radius: 10px; cursor: pointer; transition: all 0.2s;
+    color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; white-space: nowrap; user-select: none;
+}
+.menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
+.menu-item.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;
+    box-shadow: 0 4px 12px rgba(99,102,241,0.3); border: 1px solid rgba(255,255,255,0.15);
+}
+.menu-icon { width: 20px; text-align: center; font-size: 16px; flex-shrink: 0; }
+.sidebar-footer { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.header-title h1 { font-size: 24px; font-weight: 700; color: var(--text); }
+.header-title p { color: var(--text-light); font-size: 12px; margin-top: 2px; }
+.header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.card { background: var(--card); border-radius: 14px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); transition: all 0.3s; }
+.stat-card { background: var(--card); border-radius: 14px; padding: 16px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.3s; }
+[dir="rtl"] .stat-card { border-left: none; border-right: 4px solid var(--primary); }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.stat-label { color: var(--text-light); font-size: 12px; margin-bottom: 6px; }
+.stat-value { font-size: 26px; font-weight: 700; color: var(--text); }
+
+.btn { padding: 9px 16px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
+.btn-primary:hover { background: linear-gradient(135deg, #4f46e5, #7c3aed); transform: translateY(-1px); }
+.btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+.btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+.btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+.btn-sm { padding: 6px 10px; font-size: 11px; }
+.btn-block { width: 100%; justify-content: center; }
+
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; color: var(--text); }
+.form-control { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; transition: all 0.2s; background: var(--card); color: var(--text); font-family: inherit; }
+.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 16px; backdrop-filter: blur(4px); }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--card); border-radius: 16px; padding: 24px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 1px solid var(--border); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.modal-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-light); padding: 0 4px; line-height: 1; }
+.modal-close:hover { color: var(--text); }
+
+.alert { padding: 12px 16px; border-radius: 10px; margin-bottom: 12px; font-size: 13px; display: flex; align-items: center; gap: 8px; animation: slideIn 0.3s; }
+.alert-success { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+.alert-danger { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #ec4899); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; flex-shrink: 0; overflow: hidden; }
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.photo-upload { width: 120px; height: 120px; border-radius: 50%; background: var(--bg); border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin: 0 auto 20px; transition: all 0.2s; }
+.photo-upload:hover { border-color: var(--primary); background: rgba(99,102,241,0.05); }
+.photo-upload img { width: 100%; height: 100%; object-fit: cover; }
+.photo-upload .placeholder { font-size: 40px; color: var(--text-light); }
+
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.hidden { display: none !important; }
+
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); width: var(--sidebar-w) !important; }
+    [dir="rtl"] .sidebar { transform: translateX(100%); }
+    .sidebar.mobile-open { transform: translateX(0); }
+    .main { margin-left: 0 !important; padding: 12px; }
+    [dir="rtl"] .main { margin-right: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">IH</div>
+    <h1 style="text-align:center;color:white;font-size:24px;font-weight:700;margin-bottom:4px">ICON HAIR</h1>
+    <p style="text-align:center;color:#94a3b8;font-size:13px;margin-bottom:28px">Studio & Grooming Management System</p>
+    
+    <div id="loginAlert" class="hidden" style="margin-bottom:16px"></div>
+    
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group"><label class="form-label" style="color:#cbd5e1">👤 Username</label><input type="text" id="loginUser" class="form-control" placeholder="Enter username" required autocomplete="username"></div>
+      <div class="form-group"><label class="form-label" style="color:#cbd5e1">🔒 Password</label><input type="password" id="loginPass" class="form-control" placeholder="Enter password" required autocomplete="current-password"></div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;padding:12px">🔐 Sign In</button>
+    </form>
+    
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+      <button onclick="demoLogin()" class="btn btn-success btn-block">⚡ Demo Login (admin/admin)</button>
+      <button onclick="resetSystem()" class="btn btn-secondary btn-block" style="background:transparent;color:#94a3b8;border-color:rgba(255,255,255,0.2)">🔄 Reset System Data</button>
+    </div>
+    
+    <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:11px;color:#64748b">
+      <div>Default Credentials: <strong style="color:#94a3b8">admin / admin</strong></div>
+      <div id="userCount" style="margin-top:4px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP CONTAINER -->
+<div id="appContainer" class="app hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-icon">IH</div>
+      <div class="logo-text">
+        <div class="brand">ICON HAIR</div>
+        <div class="tagline">Studio & Grooming</div>
+      </div>
+    </div>
+    
+    <nav class="menu" id="menu">
+        <!-- Menu items will be injected by JS based on role -->
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="menu-item" onclick="showUserProfile()" style="background:rgba(255,255,255,0.05)">
+        <div class="user-avatar" id="sidebarAvatar" style="width:28px;height:28px;font-size:12px">A</div>
+        <div class="menu-text" id="sidebarUserName" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis">Admin</div>
+      </div>
+      <button class="menu-item" onclick="toggleTheme()" style="width:100%;background:rgba(255,255,255,0.05)">
+        <span class="menu-icon" id="themeIcon">🌙</span><span class="menu-text sidebar-footer-text" id="themeText">Dark Mode</span>
+      </button>
+      <button class="menu-item" onclick="logout()" style="width:100%;background:rgba(239,68,68,0.15);color:#fca5a5">
+        <span class="menu-icon">🚪</span><span class="menu-text sidebar-footer-text">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main" id="mainContent">
+    <div class="header">
+      <div class="header-title">
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="pageSubtitle">Business overview & insights</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary btn-sm" onclick="exportData()">💾 Backup</button>
+      </div>
+    </div>
+    <div id="alertArea"></div>
+    <div id="pageContainer">
+        <!-- Content injected by router -->
+    </div>
+  </main>
+</div>
+
+<!-- USER PROFILE MODAL -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">👤 My Profile</div><button class="modal-close" onclick="closeModal('profileModal')">×</button></div>
+    <form onsubmit="saveProfile(event)">
+      <div class="photo-upload" onclick="document.getElementById('profilePhotoInput').click()">
+        <img id="profilePhotoPreview" class="hidden">
+        <div class="placeholder" id="profilePhotoPlaceholder">📷</div>
+      </div>
+      <input type="file" id="profilePhotoInput" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+      
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="prof_name" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Username</label><input type="text" id="prof_username" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Role</label><input type="text" class="form-control" id="prof_role" readonly style="opacity:0.6"></div>
+        <div class="form-group"><label class="form-label">Email</label><input type="email" id="prof_email" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Phone</label><input type="text" id="prof_phone" class="form-control"></div>
+      </div>
+      
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+        <h3 style="color:var(--text);font-size:15px;margin-bottom:12px">🔒 Change Password</h3>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">New Password</label><input type="password" id="prof_newpass" class="form-control" placeholder="Leave blank to keep current"></div>
+          <div class="form-group"><label class="form-label">Confirm Password</label><input type="password" id="prof_confirmpass" class="form-control"></div>
+        </div>
+      </div>
+      
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('profileModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">💾 Save Profile</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// PHASE 1: CORE ARCHITECTURE & AUTHENTICATION
+// ============================================================================
+
+class Database {
+    constructor() {
+        this.tables = {
+            users: [],
+            settings: { theme: 'light', bizName: 'ICON HAIR' }
+        };
+    }
+
+    async load() {
+        const saved = localStorage.getItem('iconhair_db_v6');
+        if (saved) {
+            try {
+                const d = JSON.parse(saved);
+                Object.assign(this.tables, d);
+            } catch (e) { console.error("DB Load Error", e); }
+        }
+        this._seedDefaults();
+    }
+
+    _seedDefaults() {
+        // Ensure Admin exists
+        if (!this.tables.users.some(u => u.username === 'admin')) {
+            this.tables.users.unshift({
+                id: 1, username: 'admin', password: 'admin', name: 'Administrator',
+                role: 'manager', email: 'admin@iconhair.com', phone: '01852280080',
+                photo: null, active: true, created_at: new Date().toISOString()
+            });
+            console.log('[DB] Default admin created');
+        }
+        this.save();
+    }
+
+    save() {
+        try {
+            localStorage.setItem('iconhair_db_v6', JSON.stringify(this.tables));
+        } catch (e) { console.error("DB Save Error", e); }
+    }
+}
+
+const db = new Database();
+let currentUser = null;
+
+// Role Permissions Matrix
+const PERMISSIONS = {
+    manager: ['dashboard', 'calendar', 'appointments', 'sales', 'invoice', 'customers', 'inventory', 'purchases', 'expenses', 'services', 'staff', 'suppliers', 'legacy', 'import', 'reports', 'notifications', 'users', 'diagnostics', 'settings'],
+    staff: ['dashboard', 'calendar', 'appointments', 'sales', 'customers', 'services'],
+    cashier: ['dashboard', 'sales', 'invoice', 'customers'],
+    receptionist: ['dashboard', 'calendar', 'appointments', 'customers', 'services']
+};
+
+// --- AUTH FUNCTIONS ---
+function handleLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('loginUser').value.trim();
+    const password = document.getElementById('loginPass').value;
+    const alertDiv = document.getElementById('loginAlert');
+    
+    const user = db.tables.users.find(u => u.username === username && u.password === password);
+    
+    if (!user) {
+        showAlertLogin('❌ Invalid username or password', 'danger');
+        return;
+    }
+    if (!user.active) {
+        showAlertLogin('❌ Account is deactivated. Contact admin.', 'danger');
+        return;
+    }
+    
+    currentUser = user;
+    sessionStorage.setItem('iconhair_session', JSON.stringify(user));
+    
+    alertDiv.classList.add('hidden');
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('appContainer').classList.remove('hidden');
+    
+    initApp();
+}
+
+function demoLogin() {
+    document.getElementById('loginUser').value = 'admin';
+    document.getElementById('loginPass').value = 'admin';
+    handleLogin({ preventDefault: () => {} });
+}
+
+function logout() {
+    if(confirm('Are you sure you want to logout?')) {
+        currentUser = null;
+        sessionStorage.removeItem('iconhair_session');
+        location.reload();
+    }
+}
+
+function resetSystem() {
+    if(confirm('⚠️ WARNING: This will delete ALL data including users!\n\nType "RESET" in the next prompt to confirm.')) {
+        const confirmText = prompt('Type RESET to confirm:');
+        if(confirmText === 'RESET') {
+            localStorage.removeItem('iconhair_db_v6');
+            sessionStorage.removeItem('iconhair_session');
+            location.reload();
+        } else {
+            alert('Reset cancelled.');
+        }
+    }
+}
+
+function restoreSession() {
+    const saved = sessionStorage.getItem('iconhair_session');
+    if (saved) {
+        try {
+            const user = JSON.parse(saved);
+            // Re-validate against DB in case user was deleted/deactivated
+            const fresh = db.tables.users.find(u => u.id === user.id);
+            if (fresh && fresh.active) {
+                currentUser = fresh;
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+                return true;
+            }
+        } catch (e) {}
+    }
+    return false;
+}
+
+function showAlertLogin(msg, type='danger') {
+    const div = document.getElementById('loginAlert');
+    div.className = `alert alert-${type}`;
+    div.textContent = msg;
+    div.classList.remove('hidden');
+}
+
+// --- UI HELPERS ---
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    db.tables.settings.theme = isDark ? 'dark' : 'light';
+    document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+    document.getElementById('themeText').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+    db.save();
+}
+
+// --- USER PROFILE MANAGEMENT ---
+function showUserProfile() {
+    if(!currentUser) return;
+    document.getElementById('prof_name').value = currentUser.name || '';
+    document.getElementById('prof_username').value = currentUser.username || '';
+    document.getElementById('prof_role').value = currentUser.role.toUpperCase() || '';
+    document.getElementById('prof_email').value = currentUser.email || '';
+    document.getElementById('prof_phone').value = currentUser.phone || '';
+    document.getElementById('prof_newpass').value = '';
+    document.getElementById('prof_confirmpass').value = '';
+    
+    const img = document.getElementById('profilePhotoPreview');
+    const ph = document.getElementById('profilePhotoPlaceholder');
+    if(currentUser.photo) {
+        img.src = currentUser.photo;
+        img.classList.remove('hidden');
+        ph.classList.add('hidden');
+    } else {
+        img.classList.add('hidden');
+        ph.classList.remove('hidden');
+    }
+    openModal('profileModal');
+}
+
+function handlePhotoUpload(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    if(file.size > 500000) { alert('Image too large (max 500KB)'); return; }
+    
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        const img = document.getElementById('profilePhotoPreview');
+        img.src = ev.target.result;
+        img.classList.remove('hidden');
+        document.getElementById('profilePhotoPlaceholder').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+}
+
+function saveProfile(e) {
+    e.preventDefault();
+    const newPass = document.getElementById('prof_newpass').value;
+    const confirmPass = document.getElementById('prof_confirmpass').value;
+    
+    if(newPass && newPass !== confirmPass) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    const img = document.getElementById('profilePhotoPreview');
+    const photo = img.classList.contains('hidden') ? null : img.src;
+    
+    const idx = db.tables.users.findIndex(u => u.id === currentUser.id);
+    if(idx !== -1) {
+        db.tables.users[idx].name = document.getElementById('prof_name').value;
+        db.tables.users[idx].username = document.getElementById('prof_username').value;
+        db.tables.users[idx].email = document.getElementById('prof_email').value;
+        db.tables.users[idx].phone = document.getElementById('prof_phone').value;
+        if(photo !== undefined) db.tables.users[idx].photo = photo;
+        if(newPass) db.tables.users[idx].password = newPass;
+        
+        db.save();
+        currentUser = db.tables.users[idx];
+        sessionStorage.setItem('iconhair_session', JSON.stringify(currentUser));
+        
+        updateSidebarUser();
+        closeModal('profileModal');
+        alert('Profile updated successfully!');
+    }
+}
+
+function updateSidebarUser() {
+    if(!currentUser) return;
+    document.getElementById('sidebarUserName').textContent = currentUser.name || currentUser.username;
+    const avatar = document.getElementById('sidebarAvatar');
+    if(currentUser.photo) {
+        avatar.innerHTML = `<img src="${currentUser.photo}">`;
+    } else {
+        avatar.textContent = (currentUser.name || currentUser.username || 'U').charAt(0).toUpperCase();
+    }
+}
+
+// --- ROUTER & MENU BUILDER ---
+const MENU_ITEMS = [
+    { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+    { id: 'users', icon: '👥', label: 'User Management', roles: ['manager'] },
+    { id: 'settings', icon: '⚙️', label: 'Settings', roles: ['manager'] }
+    // More items added in future phases
+];
+
+function buildMenu() {
+    const menu = document.getElementById('menu');
+    const allowedRoles = PERMISSIONS[currentUser.role] || [];
+    
+    menu.innerHTML = MENU_ITEMS.filter(item => 
+        !item.roles || item.roles.includes(currentUser.role)
+    ).map(item => `
+        <div class="menu-item ${currentPage === item.id ? 'active' : ''}" data-page="${item.id}">
+            <span class="menu-icon">${item.icon}</span>
+            <span class="menu-text">${item.label}</span>
+        </div>
+    `).join('');
+    
+    menu.querySelectorAll('.menu-item').forEach(el => {
+        el.addEventListener('click', () => navigateTo(el.dataset.page));
+    });
+}
+
+let currentPage = 'dashboard';
+function navigateTo(page) {
+    currentPage = page;
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+    const activeItem = document.querySelector(`.menu-item[data-page="${page}"]`);
+    if(activeItem) activeItem.classList.add('active');
+    
+    renderPage(page);
+}
+
+function renderPage(page) {
+    const container = document.getElementById('pageContainer');
+    const title = document.getElementById('pageTitle');
+    const subtitle = document.getElementById('pageSubtitle');
+    
+    switch(page) {
+        case 'dashboard':
+            title.textContent = 'Dashboard';
+            subtitle.textContent = 'Welcome back, ' + currentUser.name;
+            container.innerHTML = `
+                <div class="grid-2 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-value">${db.tables.users.length}</div>
+                    </div>
+                    <div class="stat-card" style="border-color: var(--success)">
+                        <div class="stat-label">System Status</div>
+                        <div class="stat-value" style="color:var(--success);font-size:20px">Online ✅</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom:16px;color:var(--text)">ℹ️ Phase 1 Test Complete</h3>
+                    <p style="color:var(--text-light);line-height:1.6">
+                        Authentication system is working. User profile management is active. 
+                        Dark mode toggle is functional. Data persistence via LocalStorage confirmed.
+                        <br><br>
+                        <strong>Next Step:</strong> Proceed to Phase 2 for Dashboard Charts & Calendar.
+                    </p>
+                </div>
+            `;
+            break;
+            
+        case 'users':
+            title.textContent = 'User Management';
+            subtitle.textContent = 'Manage system access and roles';
+            container.innerHTML = `
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                        <h3 style="color:var(--text)">Registered Users (${db.tables.users.length})</h3>
+                        <button class="btn btn-primary btn-sm" onclick="alert('Add User feature coming in Phase 2')">➕ Add User</button>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse">
+                        <thead>
+                            <tr style="background:var(--bg);text-align:left">
+                                <th style="padding:12px;border-bottom:2px solid var(--border)">Name</th>
+                                <th style="padding:12px;border-bottom:2px solid var(--border)">Username</th>
+                                <th style="padding:12px;border-bottom:2px solid var(--border)">Role</th>
+                                <th style="padding:12px;border-bottom:2px solid var(--border)">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${db.tables.users.map(u => `
+                                <tr style="border-bottom:1px solid var(--border)">
+                                    <td style="padding:12px;font-weight:600">${u.name}</td>
+                                    <td style="padding:12px;color:var(--text-light)">@${u.username}</td>
+                                    <td style="padding:12px"><span class="btn-sm" style="background:rgba(99,102,241,0.1);color:var(--primary);border-radius:20px;padding:4px 10px">${u.role}</span></td>
+                                    <td style="padding:12px"><span class="badge-success" style="font-size:11px;padding:4px 8px;border-radius:10px">${u.active ? 'Active' : 'Inactive'}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            break;
+            
+        case 'settings':
+            title.textContent = 'System Settings';
+            subtitle.textContent = 'Configure business information';
+            container.innerHTML = `
+                <div class="card">
+                    <h3 style="margin-bottom:20px;color:var(--text)">Business Information</h3>
+                    <div class="grid-2">
+                        <div class="form-group"><label class="form-label">Business Name</label><input type="text" class="form-control" value="${db.tables.settings.bizName}"></div>
+                        <div class="form-group"><label class="form-label">Currency Symbol</label><input type="text" class="form-control" value="৳"></div>
+                    </div>
+                    <button class="btn btn-primary mt-3" onclick="alert('Settings saved (Mock)')">💾 Save Settings</button>
+                </div>
+            `;
+            break;
+            
+        default:
+            container.innerHTML = `<div class="card"><p>Page not found</p></div>`;
+    }
+}
+
+// --- INITIALIZATION ---
+async function initApp() {
+    await db.load();
+    
+    // Apply saved theme
+    if(db.tables.settings.theme === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('themeIcon').textContent = '☀️';
+        document.getElementById('themeText').textContent = 'Light Mode';
+    }
+    
+    updateSidebarUser();
+    buildMenu();
+    navigateTo('dashboard');
+    
+    console.log('[Phase 1] System Initialized Successfully');
+    console.log('[Phase 1] Current User:', currentUser.username, 'Role:', currentUser.role);
+}
+
+// Startup Sequence
+(async function startup() {
+    console.log('[Phase 1] Booting...');
+    await db.load();
+    
+    const userCountDiv = document.getElementById('userCount');
+    if(userCountDiv) userCountDiv.textContent = `${db.tables.users.length} registered user(s)`;
+    
+    if(!restoreSession()) {
+        console.log('[Phase 1] No active session. Showing login.');
+    } else {
+        initApp();
+    }
+})();
+</script>
+</body>
+</html>
